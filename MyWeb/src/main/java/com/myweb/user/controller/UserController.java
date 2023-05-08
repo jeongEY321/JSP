@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.myweb.user.model.UserDAO;
 import com.myweb.user.model.UserVO;
 import com.myweb.user.service.ChangePwService;
+import com.myweb.user.service.DeleteService;
 import com.myweb.user.service.IUserService;
 import com.myweb.user.service.JoinService;
 import com.myweb.user.service.LoginService;
@@ -83,6 +84,17 @@ public class UserController extends HttpServlet {
 		case "update":
 			System.out.println("회원 정보 수정 요청이 들어옴!");
 			sv = new UpdateService();
+			sv.execute(request, response);
+			break;
+			
+		case "delPage":
+			System.out.println("탈퇴 페이지로 이동 요청!");
+			response.sendRedirect("user/user_delete.jsp");
+			break;
+			
+		case "delete":
+			System.out.println("회원 탈퇴 요청이 들어옴!");
+			sv = new DeleteService();
 			sv.execute(request, response);
 			break;
 			

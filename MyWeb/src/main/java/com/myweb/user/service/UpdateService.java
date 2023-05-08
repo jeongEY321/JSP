@@ -1,7 +1,13 @@
 package com.myweb.user.service;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.myweb.user.model.UserDAO;
+import com.myweb.user.model.UserVO;
 
 public class UpdateService implements IUserService {
 
@@ -15,7 +21,37 @@ public class UpdateService implements IUserService {
 		 4. 수정된 정보로 세션 데이터를 교환(덮어 씌우기)
 		 5. alert()을 이용해서 사용자에게 응답 주고 마이페이지로 이동.
 		 */
-
+		UserVO vo = new UserVO();
+		vo.setUserId(request.getParameter("id"));
+		vo.setUserName(request.getParameter("name"));
+		vo.setUserEmail(request.getParameter("email"));
+		vo.setUserAddress(request.getParameter("address"));
+		
+		
+		UserDAO dao = UserDAO.getInstance();
+		
+		dao.updateUSer(vo);
+		
+		request.getSession().setAttribute("user", dao.getUserInfo(vo.getUserId()));
+		response.setContentType("text/html; charset=UTF-8");
+		
+		try {
+			PrintWriter out = response.getWriter();
+			String htmlCode = "<script>\r\n"
+					+ "				alert('회원 정보가 수정되었습니.');\r\n"
+					+ "				location.href='MyWeb/myPage.user'\r\n"
+					+ "				</script>";
+			out.print(htmlCode);
+			out.flush();
+			out.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
 	}
 
 }
