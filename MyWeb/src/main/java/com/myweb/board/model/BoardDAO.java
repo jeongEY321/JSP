@@ -54,9 +54,9 @@ public class BoardDAO implements IBoardDAO {
 	//리스트 보기
 	public List<BoardVO> listBoard() {
 		List<BoardVO> boardList = new ArrayList<>();
-		String sql = "SELECT * FROM my_board";
+		String sql = "SELECT * FROM my_board ORDER BY board_id DESC";
 		try(Connection conn = ds.getConnection();
-				PreparedStatement pstmt = conn.prepareStatement(sql)) {
+				PreparedStatement pstmt = conn.prepareStatement(sql)) { 
 			ResultSet rs = pstmt.executeQuery();
 
 			while(rs.next()) {
@@ -81,22 +81,108 @@ public class BoardDAO implements IBoardDAO {
 
 	//글 보기
 	public BoardVO contentBoard(int bId) {
+		BoardVO vo = null;
+		String sql = "SELECT * FROM my_board WHERE board_id="+bId;
+		try(Connection conn = ds.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql)) { 
+			ResultSet rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				vo = new BoardVO(
+						rs.getInt("board_id"),
+						rs.getString("writer"),
+						rs.getString("title"),
+						rs.getString("content"),
+						rs.getTimestamp("reg_date").toLocalDateTime(),
+						rs.getInt("hit")
+						);
+				
+			}
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-
-		return null;
+		
+		return vo;
 	}
 
 	//수정
 	public void updateBoard(String title, String content, int bId) {
-
-
+		String sql = "UPDATE my_board SET title=?, content=? WHERE board_id=?";
+		try(Connection conn = ds.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql)) { 
+			
+			pstmt.setString(1, title);
+			pstmt.setString(2, content);
+			pstmt.setInt(3, bId);
+			pstmt.executeUpdate();
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	//삭제
 	public void deleteBoard(int bId) {
-
+		String sql = "DELETE FROM my_board WHERE board_id="+bId;
+		try(Connection conn = ds.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.executeUpdate();	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
+	
+	@Override
+	public List<BoardVO> searchBoard(String search, String category) {
+		List<BoardVO> list = new ArrayList<>();
+		String sql = "SELECT * FROM my_board WHERE "+ category + " LIKE ?";
+		
+		try(Connection conn = ds.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1,"%"+search+"%");
+			ResultSet rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				
+				BoardVO vo = new BoardVO(
+						rs.getInt("board_id"),
+						rs.getString("writer"),
+						rs.getString("title"),
+						rs.getString("content"),
+						rs.getTimestamp("reg_date").toLocalDateTime(),
+						rs.getInt("hit")
+						);
+				
+				list.add(vo);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		return list;
+	}
+	
+	@Override
+	public void upHit(int bId) {
+		String sql = "UPDATE my_board SET hit=hit+1 WHERE board_id=?";
+		
+		try(Connection conn = ds.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, bId);
+			pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 
 }
