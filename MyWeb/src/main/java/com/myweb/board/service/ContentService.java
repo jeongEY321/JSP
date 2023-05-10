@@ -38,21 +38,18 @@ public class ContentService implements IBoardService {
                 if(i.getName().equals(request.getParameter("bId"))) {
                     flag =true;
                     break;
-                } else {
-                    response.addCookie(c);
                 }
             }
-        } else {
-        	response.addCookie(c);
         }
-        if(flag!=true) dao.upHit(bId);
-		
-		
-		
-		
+        if(flag!=true) {
+        	response.addCookie(c);
+        	dao.upHit(bId);
+        }
+
 		BoardVO vo = dao.contentBoard(bId);
 		vo.setContent(vo.getContent().replace("\r\n", "<br>"));
 
+		
 		request.setAttribute("content", vo);
 		
 	}

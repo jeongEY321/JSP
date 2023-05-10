@@ -22,12 +22,12 @@ tbody {
 </head>
 <body>
 
-	<c:if test="${user == null}">
+	<%-- <c:if test="${user == null}">
 		<script>
 			alert('회원만 이용 가능한 게시판 입니다. 로그인 해 주세요.');
 			location.href="/MyWeb/loginPage.user";
 		</script>
-	</c:if>
+	</c:if> --%>
 
 
 	<jsp:include page="../include/header.jsp" />
@@ -36,12 +36,9 @@ tbody {
 		<h2>My Web게시판</h2>
 
 		<span style="float: right; margin-bottom: 15px"> <input
-			class="btn btn-countPerPage" type="button" value="10"
-			onclick="location.href='/MyWeb/list.board?page=1&cpp=10'"> <input
-			class="btn btn-countPerPage" type="button" value="20"
-			onclick="location.href='/MyWeb/list.board?page=1&cpp=20'"> <input
-			class="btn btn-countPerPage" type="button" value="30"
-			onclick="location.href='/MyWeb/list.board?page=1&cpp=30'">
+			class="btn btn-countPerPage" type="button" value="10" onclick="location.href='/MyWeb/list.board?page=1&cpp=10'"> <input
+			class="btn btn-countPerPage" type="button" value="20" onclick="location.href='/MyWeb/list.board?page=1&cpp=20'"> <input
+			class="btn btn-countPerPage" type="button" value="30" onclick="location.href='/MyWeb/list.board?page=1&cpp=30'">
 		</span>
 
 		<table class="table table-secondary table-hover table-bordered">
@@ -55,14 +52,13 @@ tbody {
 				</tr>
 			</thead>
 
-
 			<tbody>
 				<c:forEach var="b" items="${boardList}">
 					<tr>
 						<td>${b.boardId}</td>
 						<td>${b.writer}</td>
 						<td>
-							<a href="/MyWeb/content.board?bId=${b.boardId}">${b.title}</a> 
+							<a href="/MyWeb/content.board?bId=${b.boardId}&page=${pc.paging.page}&cpp=${pc.paging.cpp}">${b.title}</a> 
 						</td>
 						<td>
 							<fmt:parseDate value="${b.regDate}" pattern="yyyy-MM-dd'T'HH:mm:ss" var="parsedDateTime" type="both" />
@@ -80,25 +76,28 @@ tbody {
 						<ul class="pagination pagination-lg">
 
 							<%-- 이전 버튼 --%>
-
-							<li class="page-item"><a class="page-link" href="#"
-								style="background-color: #643691; margin-top: 0; height: 40px; color: white; border: 0px solid #f78f24; opacity: 0.8">이전</a>
-							</li>
-
+							<c:if test="${pc.prev}">
+								<li class="page-item"><a class="page-link" 
+									href="/MyWeb/list.board?page=${pc.beginPage-1}&cpp=${pc.paging.cpp}"
+									style="background-color: #643691; margin-top: 0; height: 40px; color: white; border: 0px solid #f78f24; opacity: 0.8">이전</a>
+								</li>
+							</c:if>
 
 							<%-- 페이지 버튼 --%>
-
-							<li class="page-item"><a href="#" class="page-link"
-								style="margin-top: 0; height: 40px; color: pink; border: 1px solid #643691; ''}">1</a>
-							</li>
-
+							<c:forEach var="pageNum" begin="${pc.beginPage}" end="${pc.endPage}">
+								<li class="page-item">
+								<a href="/MyWeb/list.board?page=${pageNum}&cpp=${pc.paging.cpp}" class="page-link"
+									style="margin-top: 0; height: 40px; color: pink; border: 1px solid #643691; ${pageNum == pc.paging.page ? 'background-color: orange' : ''}">${pageNum}</a>
+								</li>
+							</c:forEach>
 
 							<%-- 다음 버튼 --%>
-
-							<li class="page-item"><a class="page-link" href="#"
-								style="background-color: #643691; margin-top: 0; height: 40px; color: white; border: 0px solid #f78f24; opacity: 0.8">다음</a>
-							</li>
-
+							<c:if test="${pc.next}">
+								<li class="page-item"><a class="page-link" 
+									href="/MyWeb/list.board?page=${pc.endPage+1}&cpp=${pc.paging.cpp}"
+									style="background-color: #643691; margin-top: 0; height: 40px; color: white; border: 0px solid #f78f24; opacity: 0.8">다음</a>
+								</li>
+							</c:if>
 						</ul>
 					</td>
 				</tr>
